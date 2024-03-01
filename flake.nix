@@ -70,7 +70,9 @@
         aarch64-darwin.workvm = self.nixosConfigurations.workvm-darwin.config.system.build.vm;
       };
 
-      githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = self.packages; };
+      githubActions = inputs.nix-github-actions.lib.mkGithubMatrix {
+        checks = nixpkgs.lib.getAttrs [ "x86_64-linux" "aarch64-darwin" ] self.packages;
+      };
     };
 
   nixConfig = {
