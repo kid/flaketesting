@@ -9,6 +9,9 @@
     flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/*.tar.gz";
 
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
+
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
+    nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   # Flake outputs that other flakes can use
@@ -46,6 +49,12 @@
             ./hosts/workvm
           ];
         };
+        workvm-aarch64 = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/workvm
+          ];
+        };
         workvm-darwin = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
@@ -55,8 +64,13 @@
         };
       };
 
-      packages.x86_64-linux.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
-      packages.aarch64-darwin.workvm-darwin = self.nixosConfigurations.workvm-darwin.config.system.build.vm;
+      packages = {
+        x86_64-linux.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
+        aarch64-linux.workvm = self.nixosConfigurations.workvm-aarch64.config.system.build.vm;
+        aarch64-darwin.workvm = self.nixosConfigurations.workvm-darwin.config.system.build.vm;
+      };
+
+      githubActions = inputs.nix-github-actions.lib.mkGithubMatrix { checks = self.packages; };
     };
 
   nixConfig = {

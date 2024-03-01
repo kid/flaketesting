@@ -1,8 +1,4 @@
-# {
-#   nixpkgs.hostPlatform = "aarch64-linux";
-#   system.stateVersion = "24.05";
-# }
-{ config, pkgs, lib, modulesPath, ... }:
+{ modulesPath, ... }:
 {
   imports = [
     "${modulesPath}/virtualisation/qemu-vm.nix"
