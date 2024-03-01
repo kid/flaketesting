@@ -8,7 +8,6 @@
     "${modulesPath}/virtualisation/qemu-vm.nix"
   ];
 
-  nixpkgs.hostPlatform = "aarch64-linux";
   system.stateVersion = "22.05";
 
   # Configure networking

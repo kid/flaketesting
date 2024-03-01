@@ -58,4 +58,15 @@
       packages.x86_64-linux.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
       packages.aarch64-darwin.workvm-darwin = self.nixosConfigurations.workvm-darwin.config.system.build.vm;
     };
+
+  nixConfig = {
+    extra-substituters = [
+      "https://nix-community.cachix.org"
+      "https://kidibox.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "kidibox.cachix.org-1:BN875x9JUW61souPxjf7eA5Uh2k3A1OSA1JIb/axGGE="
+    ];
+  };
 }
