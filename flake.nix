@@ -65,6 +65,7 @@
       };
 
       packages = {
+        x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
         x86_64-linux.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
         aarch64-linux.workvm = self.nixosConfigurations.workvm-aarch64.config.system.build.vm;
         aarch64-darwin.workvm = self.nixosConfigurations.workvm-darwin.config.system.build.vm;
