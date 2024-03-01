@@ -77,11 +77,11 @@
           };
 
           githubActions = inputs.nix-github-actions.lib.mkGithubMatrix {
-            checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] (self.packages // self.checks);
+            checks = inputs.nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks;
           };
         };
 
-        perSystem = { config, pkgs, ... }: {
+        perSystem = { config, pkgs, self', ... }: {
           devshells.default = {
             packages = [
               pkgs.nil
@@ -96,6 +96,8 @@
               yamlfmt.enable = true;
             };
           };
+
+          checks = self'.packages;
         };
       };
 }
