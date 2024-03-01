@@ -41,13 +41,13 @@
 
       nixosConfigurations = {
         workvm = nixpkgs.lib.nixosSystem {
-          system = "aarh64-linux";
+          system = "x86_64-linux";
           modules = [
             ./hosts/workvm
           ];
         };
         workvm-darwin = nixpkgs.lib.nixosSystem {
-          system = "aarh64-linux";
+          system = "x86_64-linux";
           modules = [
             ./hosts/workvm
             { virtualisation.host.pkgs = nixpkgs.legacyPackages.aarch64-darwin; }
@@ -55,7 +55,7 @@
         };
       };
 
-      packages.aarch64-darwin.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
+      packages.x86_64-linux.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
       packages.aarch64-darwin.workvm-darwin = self.nixosConfigurations.workvm-darwin.config.system.build.vm;
     };
 }
