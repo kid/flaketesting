@@ -13,12 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
-      - uses: cachix/install-nix-action@v24
       - uses: cachix/cachix-action@v14
         with:
           name: kidibox
-          # If you chose API tokens for write access OR if you have a private cache
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - name: Check Nix flake Nixpkgs inputs
+        uses: DeterminateSystems/flake-checker-action@main
       - id: set-matrix
         name: Generate Nix Matrix
         run: |
