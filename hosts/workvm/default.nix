@@ -1,6 +1,7 @@
-{ modulesPath, ... }:
+{ inputs, outputs, modulesPath, ... }:
 {
   imports = [
+    inputs.home-manager.nixosModules.home-manager
     "${modulesPath}/virtualisation/qemu-vm.nix"
   ];
 
@@ -20,4 +21,11 @@
 
   # Make it output to the terminal instead of separate window
   virtualisation.graphics = false;
+
+  home-manager = {
+    extraSpecialArgs = { inherit inputs outputs; };
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.test = import ../../home/home.nix;
+  };
 }

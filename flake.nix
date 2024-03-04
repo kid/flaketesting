@@ -28,6 +28,9 @@
 
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs @ { self, flake-parts, ... }:
@@ -36,8 +39,11 @@
         debug = true;
 
         imports = [
+          inputs.flake-parts.flakeModules.easyOverlay
           inputs.devshell.flakeModule
           inputs.treefmt-nix.flakeModule
+          ./hosts
+          ./home
         ];
 
         systems = [
@@ -47,28 +53,6 @@
         ];
 
         flake = {
-          nixosConfigurations = {
-            workvm = inputs.nixpkgs.lib.nixosSystem {
-              system = "x86_64-linux";
-              modules = [
-                ./hosts/workvm
-              ];
-            };
-            workvm-aarch64 = inputs.nixpkgs.lib.nixosSystem {
-              system = "aarch64-linux";
-              modules = [
-                ./hosts/workvm
-              ];
-            };
-            workvm-darwin = inputs.nixpkgs.lib.nixosSystem {
-              system = "x86_64-linux";
-              modules = [
-                ./hosts/workvm
-                { virtualisation.host.pkgs = inputs.nixpkgs.legacyPackages.aarch64-darwin; }
-              ];
-            };
-          };
-
           packages = {
             x86_64-linux.hello = inputs.nixpkgs.legacyPackages.x86_64-linux.hello;
             x86_64-linux.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
@@ -81,11 +65,24 @@
           };
         };
 
-        perSystem = { config, pkgs, self', ... }: {
+        perSystem = { config, pkgs, system, self', inputs', ... }: {
+          # Avoid this if possible
+          # _module.args.pkgs = import inputs.nixpkgs {
+          #   inherit system;
+          #   overlays = [
+          #     self.overlays.default
+          #   ];
+          # };
+          # overlayAttrs = {
+          #   inherit (config.packages) update-input;
+          # };
+
           devshells.default = {
             packages = [
               pkgs.nil
+              self'.packages.update-input
               config.treefmt.build.wrapper
+              inputs'.home-manager.packages.default
             ] ++ builtins.attrValues config.treefmt.build.programs;
           };
 
@@ -96,6 +93,13 @@
               yamlfmt.enable = true;
             };
           };
+
+          packages.update-input = pkgs.writeShellScriptBin "update-input" ''
+            #!${pkgs.bash}/bin/bash
+            set -euo pipefail
+            input=$(nix flake metadata --json | ${pkgs.jq}/bin/jq -r '.locks.nodes.root.inputs[]' | ${pkgs.fzf}/bin/fzf)
+            nix flake lock --update-input $input --commit-lock-file
+          '';
 
           checks = self'.packages;
         };
