@@ -1,4 +1,4 @@
-name: Nix Flake actions
+name: Nix Flake Checks
 on:
   workflow_dispatch:
   pull_request:
@@ -28,6 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
+    name: "${{ matrix.attr }}"
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v24
