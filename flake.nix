@@ -65,7 +65,7 @@
           };
         };
 
-        perSystem = { config, pkgs, system, self', ... }: {
+        perSystem = { config, pkgs, system, self', inputs', ... }: {
           # Avoid this if possible
           # _module.args.pkgs = import inputs.nixpkgs {
           #   inherit system;
@@ -82,6 +82,7 @@
               pkgs.nil
               self'.packages.update-input
               config.treefmt.build.wrapper
+              inputs'.home-manager.packages.default
             ] ++ builtins.attrValues config.treefmt.build.programs;
           };
 
