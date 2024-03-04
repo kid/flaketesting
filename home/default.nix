@@ -3,9 +3,13 @@
   flake = {
     homeConfigurations.kid = inputs.home-manager.lib.homeManagerConfiguration {
       extraSpecialArgs = { inherit inputs outputs; };
-      pkgs = inputs.nixpkgs.legacyPackages.aarch64-darwin;
+      pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
       modules = [
         ./home.nix
+        {
+          home.username = "kid";
+          home.homeDirectory = "/Users/kid";
+        }
       ];
     };
 

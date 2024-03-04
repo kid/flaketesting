@@ -1,4 +1,4 @@
-{ inputs, modulesPath, ... }:
+{ inputs, outputs, modulesPath, ... }:
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
@@ -23,7 +23,9 @@
   virtualisation.graphics = false;
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
-    users.kid = import ../../home/home.nix;
+    extraSpecialArgs = { inherit inputs outputs; };
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.test = import ../../home/home.nix;
   };
 }
