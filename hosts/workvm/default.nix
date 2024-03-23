@@ -1,8 +1,16 @@
-{ inputs, outputs, modulesPath, ... }:
+{ self, pkgs, inputs, ... }:
 {
   imports = [
-    inputs.home-manager.nixosModules.home-manager
-    "${modulesPath}/virtualisation/qemu-vm.nix"
+    inputs.disko.nixosModules.disko
+    # inputs.nixos-generators
+    # inputs.nixos-generators.nixosModules.all-formats
+    # inputs.home-manager.nixosModules.home-manager
+    # "${modulesPath}/virtualisation/qemu-vm.nix"
+    ./disko.nix
+    ./home.nix
+    ./vm.nix
+    # ./graphics.nix
+    # self.nixosModules.desktop
   ];
 
   system.stateVersion = "22.05";
@@ -21,39 +29,69 @@
 
   # Make it output to the terminal instead of separate window
   # virtualisation.graphics = false;
-  virtualisation = {
-    # useEFIBoot = true;
-    # useBootLoader = true;
-    qemu.options = [
-      "-vga virtio"
-      "-display gtk,gl=on"
-    ];
-  };
+
+  # virtualisation = {
+  #   useEFIBoot = true;
+  #   useBootLoader = true;
+  #   graphics = false;
+  #   qemu.options = [
+  #     "-vga virtio"
+  #     "-display gtk,gl=on"
+  #   ];
+  # };
 
   hardware.opengl.enable = true;
 
-  home-manager = {
-    extraSpecialArgs = { inherit inputs outputs; };
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    users.test = import ../../homes/home.nix;
-  };
+  # virtualisation.useEFIBoot = true;
+  # virtualisation.useBootLoader = true;
 
-  services.xserver = {
-    enable = true;
+  # services.xserver = {
+  #   enable = true;
+  #
+  #   displayManager = {
+  #     autoLogin = {
+  #       enable = true;
+  #       user = "test";
+  #     };
+  #     sddm = {
+  #       enable = true;
+  #       wayland.enable = true;
+  #     };
+  #   };
+  #   desktopManager = {
+  #     plasma6.enable = true;
+  #   };
+  # };
 
-    displayManager = {
-      autoLogin = {
+  # boot.loader.systemd-boot.enable = true;
+  # boot.loader.grub.devices = ["/dev/sda" "/dev/vda"];
+  # boot.loader.grub = {
+  #   zfsSupport = true;
+  # };
+  networking.hostId = "8425e349";
+
+
+  boot = {
+    supportedFilesystems = [ "zfs" ];
+    kernelPackages = pkgs.zfs.latestCompatibleLinuxPackages;
+    loader = {
+      systemd-boot = {
         enable = true;
-        user = "test";
       };
-      sddm = {
-        enable = true;
-        wayland.enable = true;
+      efi = {
+        canTouchEfiVariables = true;
       };
     };
-    desktopManager = {
-      plasma6.enable = true;
-    };
   };
+
+  # format = "disko-efi";
+  # customFormats.disko-efi = { config, inputs, modulesPath, ... }: {
+  #   formatAttr = "disko-efi";
+  #   imports = [
+  #       "${toString modulesPath}/profiles/qemu-guest.nix"
+  #   ];
+  #   system.build.disko-efi = inputs.disko.lib.makeDiskoImages {
+  #
+  #   };
+  # };
 }

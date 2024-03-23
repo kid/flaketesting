@@ -1,13 +1,24 @@
 { self
 , inputs
 , ...
-}: {
+}:
+{
   debug = true;
 
   imports = [
+    (_: {
+      perSystem = { inputs', ... }: {
+        # make pkgs available to all `perSystem` functions
+        # _module.args.pkgs = inputs'.nixpkgs.legacyPackages;
+      };
+    })
+
     inputs.flake-parts.flakeModules.easyOverlay
     inputs.devshell.flakeModule
     inputs.treefmt-nix.flakeModule
+
+    ../modules
+
     ../homes
     ../hosts
   ];
@@ -20,8 +31,10 @@
 
   flake = {
     packages = {
-      x86_64-linux.hello = inputs.nixpkgs.legacyPackages.x86_64-linux.hello;
-      x86_64-linux.workvm = self.nixosConfigurations.workvm.config.system.build.vm;
+      x86_64-linux = {
+        hello = inputs.nixpkgs.legacyPackages.x86_64-linux.hello;
+        workvm = self.nixosConfigurations.workvm.config.system.build.vm;
+      };
       aarch64-linux.workvm = self.nixosConfigurations.workvm-aarch64.config.system.build.vm;
       aarch64-darwin.workvm = self.nixosConfigurations.workvm-darwin.config.system.build.vm;
     };

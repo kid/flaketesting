@@ -31,7 +31,23 @@
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-hardware.url = "github:nixos/nixos-hardware";
   };
 
-  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } { imports = [ ./flake ]; };
+  outputs =
+    inputs:
+    let
+
+      lib = import ./lib { lib = inputs.nixpkgs.lib; } // inputs.nixpkgs.lib;
+    in
+    inputs.flake-parts.lib.mkFlake
+      {
+        inherit inputs;
+        specialArgs = { inherit lib; };
+      }
+      { imports = [ ./flake ]; };
 }
